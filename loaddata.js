@@ -42,13 +42,11 @@ function initGeometry() {
 	textureCoords = [];
 	vertexCount = 0;
 	
-	let array2D = [];
-	for(let th = 0; th < imageWidth.length; th++) {
-		for(let tw = 0; tw < imageHeight.length; tw++) {
+	let array2D=[];
+	for(let th = 0; th < imageHeight; th++) {
+		array2D.push([]);
+		for(let tw = 0; tw < imageWidth; tw++) {
 			array2D[th].push([]);
-			//if(!array2D[th]){
-			//	array2D[th] = [];
-			//}
 		}
 	}
 	
@@ -82,17 +80,10 @@ function initGeometry() {
 	}
 	
 	// calculate normals for height map
-	/*
-	console.log(imageData);
-	console.log(vertices);
-	for (let e=0; e<vertices.length; e++) {
-		
-		normals[e] = Math.cross(vertices[e], vertices[e+1]);
-	}
-	/**/
+	
 
 	// set the vertexCount equal to the number of vertices
-	vertexCount = vertices.length;
+	vertexCount = vertices.length/3;
 
 	// create the indices[] array 
 	// if vertices[] contains all of the values generated from the
@@ -108,11 +99,6 @@ function initGeometry() {
 			let b = (((h+1)*imageWidth) + w);
 			let c = b+1;
 			let d = a+1;
-			//indices2D[count] = [a, b, c];
-			//count++;
-			//indices2D[count] = [c, d, a];
-			//count++;
-			
 			//indices.push(a,b,c,a,c,d);
 			indices.push(a,b,c,c,d,a);
 		}
@@ -131,8 +117,8 @@ function initGeometry() {
 		let p2 = indices[e+1];
 		let p3 = indices[e+2];
 		
-		let vector1 = [vertices[p1*3] - vertices[p2*3],vertices[(p1*3)+1] - vertices[(p2*3)+1],vertices[(p1*3)+2] - vertices[(p2*3)+2]];
-		let vector2 = [vertices[p3*3] - vertices[p2*3],vertices[(p3*3)+1] - vertices[(p2*3)+1],vertices[(p3*3)+2] - vertices[(p2*3)+2]];
+		let vector1 = [vertices[(p1*3)] - vertices[(p2*3)],vertices[(p1*3)+1] - vertices[(p2*3)+1],vertices[(p1*3)+2] - vertices[(p2*3)+2]];
+		let vector2 = [vertices[(p3*3)] - vertices[(p2*3)],vertices[(p3*3)+1] - vertices[(p2*3)+1],vertices[(p3*3)+2] - vertices[(p2*3)+2]];
 		
 		let normalx = (vector1[1] * vector2[2])-(vector1[2] * vector2[1]);
 		let normaly = (vector1[2] * vector2[0])-(vector1[0] * vector2[2]);
@@ -177,12 +163,26 @@ function initGeometry() {
     }
 	
 	console.table(array2D);
+	console.log("Vertices: "); //600
 	console.log(vertices); //600
+	console.log("Indices: "); //342 (1026)
 	console.log(indices); //342 (1026)
+	console.log("Normals: "); //600
 	console.log(normals); //600
+	console.log("TextureCoords: "); //2052
 	console.log(textureCoords); //2052
+	console.log("VertexCount: "); //600
 	console.log(vertexCount); //600
 }
+
+/*
+function calculateSurfaceNormal(point1, point2, point3) {
+	let vu = (point2 - point1);
+	let vv = (point3 - point1);
+	
+	let nornalx = 
+}
+*/
 
 
 /* you don't need to change anything past this point
