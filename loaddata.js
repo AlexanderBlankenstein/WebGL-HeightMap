@@ -36,11 +36,6 @@ let vertexCount = 0; 	// number of vertices, not individual values
 	// your code goes here
 function initGeometry() {
 	let scaling = 0.3;
-	vertices = [];
-	indices = [];
-	normals = [];
-	textureCoords = [];
-	vertexCount = 0;
 	
 	let array2D=[];
 	for(let th = 0; th < imageHeight; th++) {
@@ -71,19 +66,13 @@ function initGeometry() {
 		
 		let tx = imageData[id][0]
 		let tz = imageData[id][1]
-		let x = imageData[id][0] * stepSize;
-		let y = (imageData[id][2] / imageDepth)*scaling;
-		let z = imageData[id][1] * stepSize;
+		let x = (imageData[id][0]) * stepSize;
+		let y = ((imageData[id][2]) / imageDepth)*scaling;
+		let z = (imageData[id][1]) * stepSize;
 		
 		vertices.push(x,y,z);
 		array2D[tx][tz] = y;
 	}
-	
-	// calculate normals for height map
-	
-
-	// set the vertexCount equal to the number of vertices
-	vertexCount = vertices.length/3;
 
 	// create the indices[] array 
 	// if vertices[] contains all of the values generated from the
@@ -99,7 +88,6 @@ function initGeometry() {
 			let b = (((h+1)*imageWidth) + w);
 			let c = b+1;
 			let d = a+1;
-			//indices.push(a,b,c,a,c,d);
 			indices.push(a,b,c,c,d,a);
 		}
 	}
@@ -112,7 +100,6 @@ function initGeometry() {
 	
 	// calculate normals for height map
 	for (let e=0; e<indices.length; e+=3) {
-		// [0,20,21]  =  indices[e]
 		let p1 = indices[e];
 		let p2 = indices[e+1];
 		let p3 = indices[e+2];
@@ -124,21 +111,27 @@ function initGeometry() {
 		let normaly = (vector1[2] * vector2[0])-(vector1[0] * vector2[2]);
 		let normalz = (vector1[0] * vector2[1])-(vector1[1] * vector2[0]);
 		
-		let total = normalx + normaly + normalz;
-		let nx = (normalx / total);
-		let ny = (normaly / total);
-		let nz = (normalz / total);
+		//get unit normal
+		let normalLength = Math.sqrt(Math.pow(normalx, 2) + Math.pow(normaly, 2) + Math.pow(normalz, 2));
 		
-		tArray[p1].push([nx,ny,nz]);
-		tArray[p2].push([nx,ny,nz]);
-		tArray[p3].push([nx,ny,nz]);
+		normalx = normalx / normalLength;
+		normaly = normaly / normalLength;
+		normalz = normalz / normalLength;
+		
+		tArray[p1].push([normalx,normaly,normalz]);
+		tArray[p2].push([normalx,normaly,normalz]);
+		tArray[p3].push([normalx,normaly,normalz]);
 	}
+	
+	// set the vertexCount equal to the number of vertices
+	vertexCount = indices.length;
 	
 	//average normals and set them to the normals array.
 	for (let sn = 0; sn<tArray.length; sn++) {
 		let totalNX = 0;
 		let totalNY =0;
 		let totalNZ = 0;
+		
 		for (let norm = 0; norm<tArray[sn].length; norm++) {
 			totalNX += tArray[sn][norm][0];
 			totalNY += tArray[sn][norm][1];
@@ -162,28 +155,21 @@ function initGeometry() {
        textureCoords.push(0.0,0.0,  1.0,0.0,   1.0,1.0,);
     }
 	
+	/* // <--- comment out here to display data
+	//print out data for testing
 	console.table(array2D);
-	console.log("Vertices: "); //600
-	console.log(vertices); //600
-	console.log("Indices: "); //342 (1026)
-	console.log(indices); //342 (1026)
-	console.log("Normals: "); //600
-	console.log(normals); //600
-	console.log("TextureCoords: "); //2052
-	console.log(textureCoords); //2052
-	console.log("VertexCount: "); //600
-	console.log(vertexCount); //600
+	console.log("Vertices: ");
+	console.log(vertices);
+	console.log("Indices: ");
+	console.log(indices);
+	console.log("Normals: ");
+	console.log(normals);
+	console.log("TextureCoords: ");
+	console.log(textureCoords);
+	console.log("VertexCount: ");
+	console.log(vertexCount);
+	/**/
 }
-
-/*
-function calculateSurfaceNormal(point1, point2, point3) {
-	let vu = (point2 - point1);
-	let vv = (point3 - point1);
-	
-	let nornalx = 
-}
-*/
-
 
 /* you don't need to change anything past this point
    the following functions return the geometry information
